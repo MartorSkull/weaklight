@@ -1,0 +1,4 @@
+
+
+def startTest():
+    return True

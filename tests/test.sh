@@ -1,0 +1,2 @@
+python ./segmentsTest.py
+
