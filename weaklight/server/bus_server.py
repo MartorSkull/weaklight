@@ -5,6 +5,9 @@ from pgi.repository import GLib
 import pydbus
 
 def add_annotation(name, value):
+    '''
+    A decorator to add an anotation to a method or a property
+    '''
     def decorator(func):
         if (not hasattr(func, "__dbus_annotations__")):
             func.__dbus_annotations__ = {name: value}
@@ -14,6 +17,10 @@ def add_annotation(name, value):
     return decorator
 
 def dbus_property(setter=None, access=None):
+    '''
+    A decorator to add dbus properties to the published 
+    dbus object
+    '''
     def decorator(func):
         func.__dbus_property__ = True
         func.__prop_setter__ = setter
@@ -30,10 +37,20 @@ def dbus_property(setter=None, access=None):
     return decorator
         
 def dbus_method(func):
+    '''
+    A decorator to add dbus methods to the published 
+    dbus object
+    '''
     func.__dbus_method__ = True
     return func
 
 class DBusObject(object):
+    '''
+    A class that represents a dbus object. To add methods to be published
+    it is required to use the decorators. When this class initializes it will 
+    look for methods and properties and check the annotations in the python 
+    method arguments to set the types.
+    '''
     def __init__(self, name):
         self.name = name
 
@@ -50,6 +67,10 @@ class DBusObject(object):
         self.__class__.dbus = str(ET.tostring(self.xml), encoding="UTF-8")
 
     def __handle_attr__(self):
+        '''
+        This method automatically handles the dbus properties and methods
+        and creates the xml to publish in dbus
+        '''
         # We get all the non hidden attributes from the class
         user_attr = [attr for attr in dir(self) if not attr.startswith("__")]
         flag = False
@@ -62,6 +83,9 @@ class DBusObject(object):
                 self.add_property(attr)
 
     def add_method(self, method):
+        '''
+        Adds a method to the dbus xml
+        '''
         # Create the element and give it its name
         meth_xml = ET.SubElement(self.interface, "method")
         meth_xml.set('name', method.__name__)
@@ -74,6 +98,9 @@ class DBusObject(object):
             self.set_annotations(meth_xml, method.__dbus_annotations__)
 
     def add_property(self, method):
+        '''
+        Adds a property to the dbus xml
+        '''
         # Create the element and give it its name, access and type
         prop_xml = ET.SubElement(self.interface, "property")
         prop_xml.set('name', method.__name__)
@@ -84,7 +111,7 @@ class DBusObject(object):
             raise AttributeError(
             "The property {p} doesn't have the required return annotation")
 
-        prop_xml.set('type', method.__annotations__["return"].char)
+        prop_xml.set('type', method.__annotations__["return"].get_char())
 
         # Set the annotations for dbus if any
         if (hasattr(method,"__dbus_annotations__")):
@@ -94,12 +121,19 @@ class DBusObject(object):
         self.__add_property__(method, method.__prop_setter__)
 
     def set_annotations(self, element, annotations):
+        '''
+        Adds many dbus annotation to the xml element.
+        '''
         for anns in annotations.keys():
             an = ET.SubElement(element, "annotation")
             an.set("name", anns)
             an.set("value", annotations[anns])
 
     def __add_agruments__(self, method, meth_xml):
+        '''
+        Reads the python annotations in the methon to detect and set the 
+        types for the method parameters
+        '''
         # Pass through all the annotations and set the arguments
         if (not method.__annotations__ and len(method.__dict__.keys) > 0):
             raise AttributeError(
@@ -107,7 +141,7 @@ class DBusObject(object):
                     m=method.__name__))
         for arg in method.__annotations__.keys():
             xml_arg = ET.SubElement(meth_xml, "arg")
-            xml_arg.set("type", method.__annotations__[arg].char)
+            xml_arg.set("type", method.__annotations__[arg].get_char())
             xml_arg.set("name", arg)
             # If the annotation denotes return value set the diretion to out
             xml_arg.set("direction", "in" if (arg != "return") else "out")
@@ -115,10 +149,19 @@ class DBusObject(object):
         return meth_xml
 
     def __add_property__(self, getter, setter=None):
+        '''
+        This method adds a property to the class.
+        To make this work as a normal property we make the 
+        class a perinstance.
+        '''
         self.__make_perinstance__()
         setattr(self.__class__, getter.__name__, property(getter, setter))
 
     def __make_perinstance__(self):
+        '''
+        This method creates a new class so that when we modify and add 
+        properties and the dbus xml we won't modify the object class
+        '''
         # Get the class and check if its not already a perinstance
         cls = type(self)
         if not hasattr(cls, '__perinstance'):

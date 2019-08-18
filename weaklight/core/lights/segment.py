@@ -14,6 +14,9 @@ class Segment:
         self.buffer = [0 for i in range(self.length)]
 
     def setBuffer(self, buf):
+        '''
+        Sets the buffer to the one passed.
+        '''
         if hasattr(buf, '__iter__') and len(buf)==self.length:
             self.buffer = buf
         else:
@@ -21,6 +24,9 @@ class Segment:
                 "The buffer must be iterable, and the same length as the segment")
 
     def setPixel(self, num, color, scale=1):
+        '''
+        Sets the pixel in the position num to the color and the brightness
+        '''
         if num>self.length-1 or num<0:
             raise OutOfRangeException(
                 "The last pixel of the segment {ident} is {length}.".format(
@@ -30,12 +36,21 @@ class Segment:
         self.buffer[num] = self._apply_scale(color, scale)
 
     def show(self):
+        '''
+        Renders the segment 
+        '''
         self.strip.showSegment(self)
 
     def numPixels(self):
+        '''
+        Returns the length of the segment
+        '''
         return self.length
 
     def _apply_scale(self, color, scale):
+        '''
+        Used to scale the color in brightness
+        '''
         # The scale should be a float between 0 and 1
         if scale<0 or scale>1:
             raise ValueError(
@@ -47,7 +62,7 @@ class Segment:
         c = colour.Color(rgb=(float(r)/255,float(g)/255,float(b)/255))
         # Modify the luminance
         c.luminance *= scale
-        # Recreate the color and give it back
+        # Recreate the color and return it
         cr = int(c.red*255)<<16|int(c.green*255)<<8|int(c.blue*255)
         
         return cr

@@ -44,12 +44,21 @@ class Strip(rpi_ws281x.PixelStrip):
                     Segment(segment['name'], self, segment['range']))
 
     def setPixelColor(self, num, color):
+        '''
+        Sets the color of the pixel in the num position
+        '''
         self.buf[num]=color
 
     def showSegment(self, segment):
+        '''
+        Renders the segment.
+        '''
         for i in range(segment.startend[0], segment.startend[1]):
             self._led_data[i] = segment.buffer[i-segment.startend[0]]
         super(self.__class__, self).show()
 
     def getSegments(self):
+        '''
+        returns the segments
+        '''
         return self.segments

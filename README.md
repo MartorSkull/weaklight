@@ -1,2 +1,2 @@
 # Weaklight
-Raspberry Pi ws_281x control librarie for dbus
+Raspberry Pi ws_281x control library for dbus

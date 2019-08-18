@@ -4,6 +4,9 @@ import inspect
 import ctypes
 
 def _async_raise(tid, exctype):
+    '''
+    This method interruprs a thread to stop it mid execution.  
+    '''
     if not inspect.isclass(exctype):
         raise TypeError("Only types can be raised (not instances)")
     res = ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(tid), ctypes.py_object(exctype))
@@ -15,6 +18,9 @@ def _async_raise(tid, exctype):
 
 
 class InterruptMixin(object):
+    '''
+    This is a mixin for a thread to allow it to be interruped
+    '''
     def _get_my_tid(self):
         if not self.isAlive():
             raise threading.ThreadError("The thread is not active")
