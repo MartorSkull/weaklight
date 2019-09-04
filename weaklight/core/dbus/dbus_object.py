@@ -1,9 +1,6 @@
 import os
 import xml.etree.ElementTree as ET
 
-from pgi.repository import GLib
-import pydbus
-
 def add_annotation(name, value):
     '''
     A decorator to add an anotation to a method or a property
@@ -51,8 +48,8 @@ class DBusObject(object):
     look for methods and properties and check the annotations in the python 
     method arguments to set the types.
     '''
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, address, name):
+        self.name = "{}.{}".format(address, name)
 
         # Create the xml and set the interface
         self.xml = ET.Element('node')

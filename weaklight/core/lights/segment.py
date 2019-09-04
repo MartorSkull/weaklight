@@ -2,14 +2,14 @@ from weaklight.core.exceptions import *
 import colour
 
 class Segment:
-    def __init__(self, ident, strip, led_range):
-        self.id = ident
+    def __init__(self, name, strip, start, end):
+        self.name = str(name)
         self.strip = strip
-        self.length = led_range[1]-led_range[0]
+        self.length = end-start
         if self.length<1:
             raise AttributeError(
-                "The range start of the range can't be bigger than the end.")
-        self.startend = led_range
+                "The start of the range can't be bigger than the end.")
+        self.startend = (start,end)
 
         self.buffer = [0 for i in range(self.length)]
 
@@ -29,8 +29,8 @@ class Segment:
         '''
         if num>self.length-1 or num<0:
             raise OutOfRangeException(
-                "The last pixel of the segment {ident} is {length}.".format(
-            Pident=self.ident,
+                "The last pixel of the segment {name} is {length}.".format(
+            name=self.name,
                 length=self.length-1))
 
         self.buffer[num] = self._apply_scale(color, scale)

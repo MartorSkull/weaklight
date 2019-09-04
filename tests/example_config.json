@@ -1,0 +1,23 @@
+{
+    "dbus": {
+        "bus_type": "System",
+        "address": "org.weaklight.pydbus"
+    },
+    "strips":{
+        "name": "desk",
+        "pin": 18,
+        "length": 33,
+        "brightness": 255,
+        "segments":[{
+                "name":"top",
+                "start": 0,
+                "end": 16
+            },
+            {
+                "name":"bottom",
+                "start": 16,
+                "end": 33
+            }
+        ]
+    }
+}

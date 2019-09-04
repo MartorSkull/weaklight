@@ -2,7 +2,6 @@ class DbusType:
     '''
     This is a python representation of a dbus type.
     '''
-    _char=None
     def __init__(self, char):
         self._char = char
 
@@ -20,9 +19,9 @@ class Array(Container):
     '''
     This class represents a dbus array
     '''
-    _array_type = None
-    _char = 'a{}'
     def __init__(self, array_type, *args, **kwargs):
+        self._array_type = None
+        self._char = 'a{}'
         # Check if the array type is a DbusType
         if (not issubclass(array_type.__class__, DbusType)):
             raise TypeError(
@@ -38,20 +37,20 @@ class Struct(Container):
     '''
     This class represents a dbus struct
     '''
-    _inner_types = []
-    _char="({})"
     def __init__(self, *args):
-        type_structure = ""
+        self._inner_types = []
+        self._char="({})"
         for inner_type in args:
             # Check if the type is a DbusType
             if (not issubclass(inner_type.__class__, DbusType)):
                 raise TypeError(
                     "The array type should be a subclass of DbusType")
 
-            _inner_types.append(inner_type) 
+            self._inner_types.append(inner_type) 
 
     def get_char(self):
         type_structure = ""
+        print(self._inner_types)
         for inner_type in self._inner_types:
             type_structure += inner_type.get_char()
 
@@ -64,10 +63,10 @@ class Dict_Entry(Container):
     This class represents a dbus Dict_entry. This should only be used 
     within an array.
     '''
-    _key_type = None
-    _value_type = None
-    _char = "\{{key}{value}\}"
     def __init__(self, key_type, value_type):
+        self._key_type = None
+        self._value_type = None
+        self._char = "\{{key}{value}\}"
         type_structure = ""
         # Check if the key type is a DbusType and not a container
         if (issubclass(key_type.__class__, Container) 
@@ -109,5 +108,5 @@ class Types:
     Unix_Fd = DbusType('h')
     Array = Array
     Struct = Struct
-    Dict_Entry = Dict_Entry
-    Variant = Variant
+    Dict_Entry = Dict_Entry.__class__
+    Variant = Variant.__class__

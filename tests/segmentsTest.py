@@ -91,17 +91,19 @@ class Interrupt(threading.Thread, weaklight.core.threads.InterruptMixin):
     pass
 
 config = {
-    "num": 33,
+    "length": 33,
     "pin": 18,
     "name": "test",
     "brightness": 52,
     "segments": [{
-            "name": "0-15",
-            "range": (0, 15)
+            "name": "1-16",
+            "start": 0,
+            "end": 16
         },
         {
-            "name": "15-33",
-            "range": (15, 33)
+            "name": "17-33",
+            "start": 16,
+            "end": 33
         }
     ]
 }

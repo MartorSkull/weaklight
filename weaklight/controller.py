@@ -1,12 +1,21 @@
-from weaklight.core import lights
 import os
-import threading
+
+from .core import lights
+from .server import DBusServer
 
 class Controller:
-    def __init__(self, stripsconfig):
-        for config in stripsconfig:
-            self.strips.append(lights.Strip(**config))
-        
+    strips = []
+
+    def __init__(self, config):
+        self.config = config
+        if (isinstance(config, map)):
+            for stripsconfig in config['strips']:
+                self.strips.append(lights.Strip(**stripsconfig))
+        else:
+            self.strips.append(lights.Strip(**config['strips']))
+
+    def begin(self):
         for strip in self.strips:
-            for segment in strip.getSegments():
-                self.segments[segment.name] = segment
+            strip.begin()
+        self.server = DBusServer(strips=self.strips, **self.config['dbus'])
+        self.server.start_server()
