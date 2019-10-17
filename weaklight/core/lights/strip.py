@@ -39,12 +39,12 @@ class Strip(rpi_ws281x.PixelStrip):
         self.invert = invert
         self.brightness = brightness
         self.channel = channel
-        self. strip_type = strip_type
+        self.strip_type = strip_type
         self.gamma = gamma
 
         self.segments = []
 
-        self.name = name
+        self.name = str(name)
 
         if len(segments)==0:
             self.segmented = False

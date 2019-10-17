@@ -31,8 +31,13 @@ class DBusServer(object):
         for strip in self.strips:
             if strip.segmented:
                 for segment in strip.getSegments():
-                    dbus_segments.append(classes.Segment(segment, self.address))
-            dbus_strips.append(classes.Strip(strip, self.address))
+                    dbus_segments.append(
+                        (
+                            "{0}/{1}".format(strip.name,segment.name), 
+                            classes.Segment(segment, self.address)
+                        )
+                    )
+            dbus_strips.append((strip.name, classes.Strip(strip, self.address)))
 
         publish = self.bus.publish(self.address,
             *dbus_strips,
